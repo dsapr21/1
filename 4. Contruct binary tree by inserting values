@@ -1,1 +1,182 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
 
+class bstnode {
+public:
+    int data;
+    bstnode *left, *right;
+    bstnode(int x) {
+        data = x;
+        left = right = NULL;
+    }
+};
+
+class bst {
+    bstnode *root;
+
+public:
+    bst() {
+        root = NULL;
+    }
+
+    bstnode* create();
+    void insert(int x);
+    bstnode* find(int x);
+    bstnode* minvalue(bstnode* t);
+    bstnode* maxvalue(bstnode* t);
+    int longest_path(bstnode* T);
+    void display(bstnode* t);
+    bstnode* mirror(bstnode* t);
+    bstnode* getRoot() { return root; } 
+    void setRoot(bstnode* r) { root = r; } 
+};
+
+bstnode* bst::create() {
+    int x, i, n;
+    cout << "Enter total number of nodes: ";
+    cin >> n;
+    cout << "Enter tree values: ";
+    for (i = 0; i < n; i++) {
+        cin >> x;
+        insert(x);
+    }
+    return root;
+}
+
+void bst::insert(int x) {
+    bstnode *p, *q, *r;
+    r = new bstnode(x);
+    if (root == NULL) {
+        root = r;
+        return;
+    }
+    p = root;
+    while (p != NULL) {
+        q = p;
+        if (x > p->data)
+            p = p->right;
+        else
+            p = p->left;
+    }
+    if (x > q->data)
+        q->right = r;
+    else
+        q->left = r;
+}
+
+bstnode* bst::find(int x) {
+    bstnode *p = root;
+    while (p != NULL) {
+        if (x == p->data)
+            return p;
+        if (x > p->data)
+            p = p->right;
+        else
+            p = p->left;
+    }
+    return NULL;
+}
+
+bstnode* bst::minvalue(bstnode* t) {
+    if (t == NULL) return NULL;
+    while (t->left != NULL) {
+        t = t->left;
+    }
+    return t;
+}
+
+bstnode* bst::maxvalue(bstnode* t) {
+    if (t == NULL) return NULL;
+    while (t->right != NULL) {
+        t = t->right;
+    }
+    return t;
+}
+
+int bst::longest_path(bstnode* T) {
+    if (T == NULL)
+        return 0;
+    int hl = longest_path(T->left);
+    int hr = longest_path(T->right);
+    return (hl > hr ? hl : hr) + 1;
+}
+
+void bst::display(bstnode *t) {
+    if (t != NULL) {
+        display(t->left);
+        cout << "\t" << t->data;
+        display(t->right);
+    }
+}
+
+bstnode* bst::mirror(bstnode *t) {
+    bstnode *temp;
+    if (t != NULL) {
+        temp = t->left;
+        t->left = mirror(t->right);
+        t->right = mirror(temp);
+    }
+    return t;
+}
+
+int main() {
+    int ch, x, i;
+    bst b;
+    bstnode *p, *root = NULL;
+
+    do {
+        cout << "\n1. Create \n2. Find \n3. Find Min \n4. Find Max \n5. Longest Path \n6. Display \n7. Mirror \n8. Exit";
+        cout << "\nEnter your choice: ";
+        cin >> ch;
+        switch (ch) {
+            case 1:
+                root = b.create();
+                b.setRoot(root);
+                break;
+            case 2:
+                cout << "Enter node to be searched: ";
+                cin >> x;
+                p = b.find(x);
+                if (p == NULL)
+                    cout << "\nNode not found";
+                else
+                    cout << "\nNode found: " << p->data;
+                break;
+            case 3:
+                p = b.minvalue(b.getRoot());
+                if (p != NULL)
+                    cout << "\nMinimum value: " << p->data;
+                else
+                    cout << "\nTree is empty.";
+                break;
+            case 4:
+                p = b.maxvalue(b.getRoot());
+                if (p != NULL)
+                    cout << "\nMaximum value: " << p->data;
+                else
+                    cout << "\nTree is empty.";
+                break;
+            case 5:
+                i = b.longest_path(b.getRoot());
+                cout << "\nLongest path in tree (height): " << i;
+                break;
+            case 6:
+                cout << "\nTree elements :";
+                b.display(b.getRoot());
+                break;
+            case 7:
+                root = b.mirror(b.getRoot());
+                b.setRoot(root);
+                cout << "\nTree mirrored.";
+                b.display(b.getRoot());
+                break;
+            case 8:
+                exit(0);
+            default:
+                cout << "\nInvalid choice!";
+        }
+    } while (ch != 8);
+
+    return 0;
+}
