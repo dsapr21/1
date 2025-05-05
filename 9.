@@ -1,0 +1,206 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    string key;
+    string meaning;
+    Node *left;
+    Node *right;
+};
+
+class AVL {
+    Node *root;
+
+public:
+    AVL() {
+        root = NULL;
+    }
+
+    void create();
+    Node* insert(Node *cur, Node *temp);
+    Node* balance(Node *temp);
+    int dif(Node *temp);
+    int height(Node *temp);
+    int maximum(int a, int b);
+
+    Node* LL(Node *par);
+    Node* RR(Node *par);
+    Node* LR(Node *par);
+    Node* RL(Node *par);
+
+    void ascending(Node *temp);
+    void display();
+};
+
+void AVL::create() {
+    char answer;
+    Node *temp;
+    do {
+        temp = new Node();
+        cout << "\n Enter the keyword: ";
+        cin >> temp->key;
+        cout << "\n Enter the meaning: ";
+        cin >> temp->meaning;
+        temp->left = temp->right = NULL;
+
+        root = insert(root, temp);
+
+        cout << "\n Do you want to add another word? (y/n): ";
+        cin >> answer;
+    } while (answer == 'y' || answer == 'Y');
+}
+
+Node* AVL::insert(Node *cur, Node *temp) {
+    if (cur == NULL) {
+        return temp;
+    }
+    if (temp->key < cur->key) {
+        cur->left = insert(cur->left, temp);
+        cur = balance(cur);
+    } else if (temp->key > cur->key) {
+        cur->right = insert(cur->right, temp);
+        cur = balance(cur);
+    }
+    return cur;
+}
+
+Node* AVL::balance(Node *temp) {
+    int bal;
+    bal = dif(temp);
+
+    if (bal >= 2) {
+        if (dif(temp->left) < 0)
+            temp = LR(temp);
+        else
+            temp = LL(temp);
+    } else if (bal <= -2) {
+        if (dif(temp->right) < 0)
+            temp = RR(temp);
+        else
+            temp = RL(temp);
+    }
+    return temp;
+}
+
+int AVL::dif(Node *temp) {
+    int l, r;
+    l = height(temp->left);
+    r = height(temp->right);
+    return (l - r);
+}
+
+int AVL::height(Node *temp) {
+    if (temp == NULL)
+        return -1;
+    else
+        return (maximum(height(temp->left), height(temp->right)) + 1);
+}
+
+int AVL::maximum(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+Node* AVL::LL(Node *par) {
+    Node *temp, *temp1;
+    temp = par->left;
+    temp1 = temp->right;
+    temp->right = par;
+    par->left = temp1;
+    return temp;
+}
+
+Node* AVL::RR(Node *par) {
+    Node *temp, *temp1;
+    temp = par->right;
+    temp1 = temp->left;
+    temp->left = par;
+    par->right = temp1;
+    return temp;
+}
+
+Node* AVL::LR(Node *par) {
+    par->left = RR(par->left);
+    return LL(par);
+}
+
+Node* AVL::RL(Node *par) {
+    par->right = LL(par->right);
+    return RR(par);
+}
+
+void AVL::ascending(Node *temp) {
+    if (temp != NULL) {
+        ascending(temp->left);
+        cout << "\n\t" << temp->key << " : " << temp->meaning;
+        ascending(temp->right);
+    }
+}
+
+void AVL::display() {
+    cout << "\n The keywords in ascending order are:\n";
+    ascending(root);
+}
+
+int main() {
+    char c;
+    int ch;
+    AVL a;
+    do {
+        cout << "*********************************";
+        cout << "\n 1. Insert a keyword in AVL tree.";
+        cout << "\n 2. Display the AVL tree.";
+        cout << "\n Enter your choice: ";
+        cin >> ch;
+        switch (ch) {
+        case 1:
+            a.create();
+            break;
+        case 2:
+            a.display();
+            break;
+        default:
+            cout << "\n Wrong choice!";
+        }
+        cout << "\n Do you want to continue? (y/n): ";
+        cin >> c;
+    } while (c == 'y' || c == 'Y');
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+// Output :
+// ********************************* 
+// 1.Insert a keyword in AVL tree. 
+// 2.Display the AVL tree. 
+// Enter your choice : 1 
+// Enter the keyword: a 
+// Enter the meaning: apple 
+// Do you want to add another word?(y/n) y
+//  Enter the keyword: b 
+// Enter the meaning: ball 
+// Do you want to add another word?(y/n) y 
+// Enter the keyword: d 
+// Enter the meaning: doll 
+// Do you want to add another word?(y/n) y 
+// Enter the keyword: f 
+// Enter the meaning: fan 
+// Do you want to add another word?(y/n) n 
+// Do you want to continue? (y/n): y 
+// ********************************* 
+// 1.Insert a keyword in AVL tree. 
+// 2.Display the AVL tree. 
+// Enter your choice : 2 
+// The keywords in ascending order are : 
+// a : apple 
+// b : ball
+// d : doll 
+// f : fan
+//  Do you want to continue? (y/n): n
